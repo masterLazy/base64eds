@@ -43,3 +43,15 @@ Decoding file 100%|████████████████████�
 
 （机器参数：Intel i7-6700@3.40GHz，32GB RAM）
 
+## ⚙️ 如何编译
+
+把 `mlib/include/` 添加到包含目录，添加 `main.cpp` 到源文件，然后编译即可。
+
+
+
+
+## 🗂 第三方代码声明
+
+本项目包含以下第三方代码，其版权归属原作者。
+
+- [cssopts](https://github.com/jarro2783/cxxopts)，许可证文件在 `cxxopts_license.txt`。
