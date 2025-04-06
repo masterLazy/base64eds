@@ -9,7 +9,7 @@
 using namespace std;
 
 // mlib
-#include "console/progressbar.hpp"
+#include <mlib/console.hpp>
 using namespace mlib::console;
 
 class Base64Encoder {
