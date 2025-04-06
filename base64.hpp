@@ -163,7 +163,7 @@ class Base64Encoder {
 				}
 				*cur++ = temp_bytes >> 16;
 				*cur++ = (temp_bytes >> 8) & 0xff;
-				if (dec(str[i + 1]) & 0x03) {
+				if (dec(str[i + 2]) & 0x03) {
 					*cur++ = temp_bytes & 0xff;
 				}
 				return cur - dec_obuf;
@@ -249,9 +249,7 @@ public:
 			temp_bytes |= dec(str[i + 3]);
 			temp_str[0] = temp_bytes >> 16;
 			temp_str[1] = (temp_bytes >> 8) & 0xff;
-			if (dec(str[i + 1]) & 0x03) {
-				temp_str[2] = temp_bytes & 0xff;
-			}
+			temp_str[2] = temp_bytes & 0xff;
 			res += temp_str;
 		}
 		return res;
