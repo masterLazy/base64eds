@@ -12,7 +12,7 @@ using namespace std;
 #include <mlib/console.hpp>
 using namespace mlib::console;
 
-class Base64Encoder {
+class Base64 {
 	const char base64[64] = {
 		'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P',
 		'Q','R','S','T','U','V','W','X','Y','Z','a','b','c','d','e','f',
@@ -48,15 +48,21 @@ class Base64Encoder {
 	char dec_ibuf[dec_ibuf_size] = { 0 };
 	unsigned char dec_obuf[dec_obuf_size] = { 0 };
 
-	string open_output_file(FILE** fout, string filepath, const string& mode, bool encode) {
+	const string enc_suf = ".b64";
+	const string dec_suf = ".bin";
+
+	string open_output_file(FILE** fout, string filepath, const string& mode, string suf) {
 		string path;
-		// 去掉后缀名
-		if (!encode) {
-			filepath = filepath.substr(0, filepath.find_last_of("."));
+		// 如果以 enc_buf 结尾
+		if (suf == dec_suf and filepath.substr(filepath.find_last_of(".")) == enc_suf) {
+			filepath = filepath.substr(0, filepath.find_last_of(".")); // 去掉 enc_buf
+			if (filepath.find(".")) { // 已有后缀名
+				suf = ""; // 那就不加 dec_suf 了
+			}
 		}
 		// 尝试 Plan A
 		if (!fopen_s(fout,
-			(path = filepath + (encode ? "_enc.txt" : "_dec")).c_str(),
+			(path = filepath + suf).c_str(),
 			"r")) {
 			fclose(*fout);
 			cout << "File " << path << " already exists. Do you want to override? [y/n]" << endl;
@@ -72,7 +78,7 @@ class Base64Encoder {
 				// Plan B
 				for (int i = 1; i < 1024; i++) {
 					if (!fopen_s(fout,
-						(path = filepath + (encode ? "_enc_" + to_string(i) + ".txt" : "_dec_" + to_string(i))).c_str(),
+						(path = filepath + "_" + to_string(i) + suf).c_str(),
 						mode.c_str())) {
 						return path;
 					}
@@ -90,7 +96,7 @@ class Base64Encoder {
 		// 尝试 Plan B
 		for (int i = 1; i < 1024; i++) {
 			if (!fopen_s(fout,
-				(path = filepath + (encode ? "_enc_" + to_string(i) + ".txt" : "_dec_" + to_string(i))).c_str(),
+				(path = filepath + "_" + to_string(i) + suf).c_str(),
 				"r")) {
 				fclose(*fout);
 				continue;
@@ -260,7 +266,7 @@ public:
 		if (fopen_s(&fin, filepath.c_str(), "rb")) {
 			throw file_invalid;
 		}
-		string path = open_output_file(&fout, filepath, "wb", true);
+		string path = open_output_file(&fout, filepath, "wb", enc_suf);
 		cout << "Writing encoding result to " + path << endl;
 		size_t file_size = get_file_size(fin);
 		if (!file_size) {
@@ -289,7 +295,7 @@ public:
 		if (fopen_s(&fin, filepath.c_str(), "rb")) {
 			throw file_invalid;
 		}
-		string path = open_output_file(&fout, filepath, "wb", false);
+		string path = open_output_file(&fout, filepath, "wb", dec_suf);
 		cout << "Writing decoding result to " + path << endl;
 		size_t file_size = get_file_size(fin);
 		if (!file_size) {
@@ -312,5 +318,11 @@ public:
 		}
 		pb.print();
 		fclose(fout);
+	}
+	void scan_file(const string& filepath) {
+		FILE* fin, * fout;
+		if (fopen_s(&fin, filepath.c_str(), "rb")) {
+			throw file_invalid;
+		}
 	}
 };

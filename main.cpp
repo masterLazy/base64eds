@@ -12,7 +12,7 @@ using namespace std;
 
 #include "cxxopts.hpp"
 
-Base64Encoder base64;
+Base64 base64;
 const string program_verson = "3.0";
 const auto arg_invalid = cxxopts::exceptions::exception("Invalid arguments");
 const auto arg_unmatch = cxxopts::exceptions::exception("No matching arguments");
@@ -92,7 +92,7 @@ int main(int argc, char* argv[]) {
 				}
 			}
 		} else if (res.count("scan")) { // …®√Ë
-
+			base64.scan_file(res["scan"].as<string>());
 		} else if (res.count("help")) { // ∞Ô÷˙
 			cout << options.help() << endl;
 		} else if (res.count("version")) { // ∞Ê±æ
